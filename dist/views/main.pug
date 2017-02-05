@@ -1,0 +1,31 @@
+title Main Page
+body
+  div
+    div Totals:
+    table
+      thead
+        tr
+          th Name
+          th Bought
+          th Consumed
+      tbody
+        for v, k in totalMap
+          tr
+            td= k
+            td= v.bought
+            td= v.consumed
+
+    div History:
+      for i in recordList
+        table
+          thead
+            tr
+              th Name
+              th Bought
+              th Consumed
+          tbody
+            for j in i
+              tr
+                td= j.name
+                td= j.bought
+                td= j.consumed
