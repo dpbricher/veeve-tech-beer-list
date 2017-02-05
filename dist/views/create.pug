@@ -1,0 +1,13 @@
+title Create Entry
+body
+  form(action='/create-new')
+    for data in [{name:'Dean',bought:'deanBought',consumed:'deanConsumed'}, {name:'Symon',bought:'symonBought',consumed:'symonConsumed'}, {name:'Giannis',bought:'giannisBought',consumed:'giannisConsumed'}, {name:'Oli',bought:'oliBought',consumed:'oliConsumed'}]
+      div
+        span= data.name
+        div
+          span Bought
+          input(min=0, name=data.bought, type='number', value=0)
+        div
+          span Consumed
+          input(min=0, name=data.consumed, type='number', value=0)
+    input(type='submit')

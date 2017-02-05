@@ -16,6 +16,11 @@
       return fs.readdirSync(this.recordDir);
     }
 
+    createRecord(data) {
+      fs.writeFileSync(path.join(this.recordDir,
+        `${new Date().toISOString()}.json`), JSON.stringify(data));
+    }
+
     getRecordList() {
       return this.listRecords().map((i)=> this._getRecordFile(i));
     }
