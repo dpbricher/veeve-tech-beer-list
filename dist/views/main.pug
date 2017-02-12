@@ -1,4 +1,12 @@
 title Main Page
+head
+  style
+    | input + div {
+    |   display:none;
+    | }
+    | input:checked + div {
+    |   display:block;
+    | }
 body
   a(href='/create') Create New
   div
@@ -22,6 +30,8 @@ body
             td= person.consumed
             td= person.ratio
 
+    label(for='show-history') Show history
+    input(id='show-history' type='checkbox')
     div History:
       for i in recordList
         table
