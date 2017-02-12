@@ -2,6 +2,10 @@ title Main Page
 body
   a(href='/create') Create New
   div
+    div Next:
+      for personMap in nextBuyersList
+        span= personMap.name
+
     div Totals:
     table
       thead
@@ -9,12 +13,14 @@ body
           th Name
           th Bought
           th Consumed
+          th B/C Ratio
       tbody
-        for v, k in totalMap
+        for person in personList
           tr
-            td= k
-            td= v.bought
-            td= v.consumed
+            td= person.name
+            td= person.bought
+            td= person.consumed
+            td= person.ratio
 
     div History:
       for i in recordList
