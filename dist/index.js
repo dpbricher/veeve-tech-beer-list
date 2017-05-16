@@ -68,7 +68,8 @@
       makeEntryObj('Dean', query.deanBought, query.deanConsumed),
       makeEntryObj('Oli', query.oliBought, query.oliConsumed),
       makeEntryObj('Giannis', query.giannisBought, query.giannisConsumed),
-      makeEntryObj('Symon', query.symonBought, query.symonConsumed)
+      makeEntryObj('Symon', query.symonBought, query.symonConsumed),
+      makeEntryObj('Stuart', query.stuartBought, query.stuartConsumed)
     ];
 
     db.createRecord(data);
