@@ -38,7 +38,7 @@
   });
 
   app.get('/', (req, res)=> {
-    let recordList  = db.getRecordList();
+    let recordList  = db.getRecordListReverse();
     let totalMap    = {};
     let personList  = [];
 

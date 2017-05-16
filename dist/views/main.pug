@@ -1,20 +1,18 @@
 title Main Page
 head
-  style
-    | input + div {
-    |   display:none;
-    | }
-    | input:checked + div {
-    |   display:block;
-    | }
+  link(href='/style/main.css', rel='stylesheet')
 body
-  a(href='/create') Create New
-  div
-    div Next:
-      for personMap in nextBuyersList
-        span= personMap.name
+  div.controls
+    div
+      div.next
+        span Next:
+        for personMap in nextBuyersList
+          span= personMap.name
 
-    div Totals:
+    a(href='/create') Create New
+
+  div.info
+    div.totals Totals:
     table
       thead
         tr
@@ -23,25 +21,25 @@ body
           th Consumed
           th B/C Ratio
       tbody
-        for person in personList
-          tr
+        for person, i in personList
+          tr(class=i % 2 ? 'even' : 'odd')
             td= person.name
             td= person.bought
             td= person.consumed
             td= person.ratio
 
-    label(for='show-history') Show history
-    input(id='show-history' type='checkbox')
+  div.history
     div History:
-      for i in recordList
-        table
+    div.record-list
+      for record, i in recordList
+        table(class=i % 2 ? 'even' : 'odd')
           thead
             tr
               th Name
               th Bought
               th Consumed
           tbody
-            for j in i
+            for j in record
               tr
                 td= j.name
                 td= j.bought

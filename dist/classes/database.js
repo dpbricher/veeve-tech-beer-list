@@ -25,6 +25,15 @@
       return this.listRecords().map((i)=> this._getRecordFile(i));
     }
 
+    getRecordListReverse() {
+      let list  = [];
+
+      this.listRecords().reduceRight((_, i)=>
+        list.push(this._getRecordFile(i)), 0);
+
+      return list;
+    }
+
     _getRecordFile(name) {
       return JSON.parse(fs.readFileSync(path.join(this.recordDir, name)));
     }
