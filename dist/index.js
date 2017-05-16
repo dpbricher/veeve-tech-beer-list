@@ -3,16 +3,21 @@
 
   const express = require('express');
   const pug     = require('pug');
+  const stylus  = require('stylus');
 
   const Database  = require('./classes/database');
 
   const PORT    = 1337;
 
-  let app = express();
-  let db  = new Database();
+  let app       = express();
+  let db        = new Database();
+  let styleDir  = __dirname + '/style';
 
   app.set('view engine', 'pug');
   app.set('views', './views');
+
+  app.use(stylus.middleware(styleDir));
+  app.use('/style', express.static(styleDir));
 
   app.get('/', (req, res)=> {
     let recordList  = db.getRecordList();
