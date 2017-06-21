@@ -1,6 +1,7 @@
 (()=> {
   'use strict';
 
+  const auth    = require('basic-auth');
   const express = require('express');
   const pug     = require('pug');
   const stylus  = require('stylus');
@@ -20,6 +21,21 @@
 
   app.use(stylus.middleware(styleDir));
   app.use('/style', express.static(styleDir));
+
+  app.all('*', function(req, res, next) {
+    let loginMap    = auth(req);
+    let correctMap  = config.login;
+
+    if (!loginMap || !correctMap || loginMap.name !== correctMap.name ||
+      loginMap.pass !== correctMap.pass) {
+
+      res.header('WWW-Authenticate', 'Basic realm="Veeve Tech Beer List"')
+      .status(401)
+      .send('Denied');
+    } else {
+      next();
+    }
+  });
 
   app.get('/', (req, res)=> {
     let recordList  = db.getRecordList();
