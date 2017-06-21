@@ -5,6 +5,8 @@
   const pug     = require('pug');
   const stylus  = require('stylus');
 
+  const config  = require('./.config');
+
   const Database  = require('./classes/database');
 
   const PORT    = 1337;
