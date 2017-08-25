@@ -1,22 +1,30 @@
 head
-    title Create Entry
-    link(href='/style/create.css', rel='stylesheet')
+  title Create Record
+  link(href='/style/create.css', rel='stylesheet')
 body
-  form(action='/create-new')
+  - var resFrameName = 'create-response'
+  div.header Create new beer list record
+  form(action='/create-new', target=resFrameName)
     div.name-table
       div.name-list
-        div Buyer
+        div
+          div Buyer
+          div.info select one
         for name in nameList
           label
             input(type='radio', name='buyer', value=name)
             div= name
 
       div.name-list
-        div Drinkers
+        div
+          div Drinkers
+          div.info select many
         for name in nameList
           label
             input(type='checkbox', name='consumerList[]', value=name)
             div= name
+    div.buttons
+      input(type='submit' value='Submit')
+      a(href='/') Cancel
 
-    input(type='submit' value='Submit')
-    a(href='/') Cancel
+  iframe(name=resFrameName)

@@ -1,27 +1,58 @@
 cellPad = 10px
 border  = 1px solid black
 
-.name-table
-  display table
-  border border
+body
+  margin 0 auto
+  max-width 1000px
 
-  input[type=checkbox]
-  input[type=radio]
-    display none
+  .header
+    padding 5px
+    text-align center
 
-    & + div
-      padding cellPad
+  form
+    .name-table
+      display table
+      border border
+      margin 0 auto
 
-    &:checked + div
-      background-color lightgrey
+      input[type=checkbox]
+      input[type=radio]
+        display none
 
-  .name-list
-    display table-row
+        & + div
+          padding cellPad
 
-    > div
-    label
-      display table-cell
+        &:checked + div
+          background-color lightgrey
 
-    > div
-      border-right border
-      padding cellPad
+      .name-list
+        display table-row
+
+        > div
+        label
+          display table-cell
+          vertical-align middle
+
+        > div
+          border-right border
+          padding cellPad
+          text-align center
+
+          .info
+            font-size 80%
+
+    .buttons
+      align-items center
+      display flex
+      justify-content center
+      padding 5px
+
+      :not(:last-child)
+        margin-right 5px
+
+      > *
+        padding 5px
+
+  iframe
+    border none
+    width 100%

@@ -104,7 +104,7 @@
 
     db.createRecord(dataList);
 
-    res.render('create-success');
+    res.render('success');
   });
 
   app.listen(PORT, ()=> console.log(`listening on port ${PORT}`));
