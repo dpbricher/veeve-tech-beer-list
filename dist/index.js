@@ -90,21 +90,26 @@
   });
 
   app.get('/create-new', (req, res)=> {
-    let query     = req.query;
-    let nameList  = query.consumerList.slice();
+    let query = req.query;
 
-    if (nameList.indexOf(query.buyer) < 0)
-      nameList.push(query.buyer);
+    if (query.buyer && query.consumerList) {
+      let nameList  = query.consumerList.slice();
 
-    let dataList  = nameList.map((name)=> ({
-      bought:query.buyer === name ? query.consumerList.length : 0,
-      consumed:query.consumerList.indexOf(name) < 0 ? 0 : 1,
-      name:name
-    }));
+      if (nameList.indexOf(query.buyer) < 0)
+        nameList.push(query.buyer);
 
-    db.createRecord(dataList);
+      let dataList  = nameList.map((name)=> ({
+        bought:query.buyer === name ? query.consumerList.length : 0,
+        consumed:query.consumerList.indexOf(name) < 0 ? 0 : 1,
+        name:name
+      }));
 
-    res.render('success');
+      db.createRecord(dataList);
+
+      res.render('success');
+    } else {
+      res.status(400).render('failure');
+    }
   });
 
   app.listen(PORT, ()=> console.log(`listening on port ${PORT}`));
