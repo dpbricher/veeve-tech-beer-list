@@ -79,23 +79,30 @@
       recordList:recordList });
   });
 
-  app.get('/create', (req, res)=> res.render('create'));
+  app.get('/create', (req, res)=> {
+    let nameMap   = {};
+
+    db.getRecordList().forEach((record)=>
+      record.forEach((entry)=> nameMap[entry.name] = 0)
+    );
+
+    res.render('create', { nameList:Object.keys(nameMap) });
+  });
 
   app.get('/create-new', (req, res)=> {
-    let makeEntryObj  = (name, bought, consumed)=> {
-      return {name:name, bought:parseInt(bought), consumed:parseInt(consumed) };
-    };
+    let query     = req.query;
+    let nameList  = query.consumerList.slice();
 
-    let query = req.query;
-    let data  = [
-      makeEntryObj('Dean', query.deanBought, query.deanConsumed),
-      makeEntryObj('Oli', query.oliBought, query.oliConsumed),
-      makeEntryObj('Giannis', query.giannisBought, query.giannisConsumed),
-      makeEntryObj('Symon', query.symonBought, query.symonConsumed),
-      makeEntryObj('Stuart', query.stuartBought, query.stuartConsumed)
-    ];
+    if (nameList.indexOf(query.buyer) < 0)
+      nameList.push(query.buyer);
 
-    db.createRecord(data);
+    let dataList  = nameList.map((name)=> ({
+      bought:query.buyer === name ? query.consumerList.length : 0,
+      consumed:query.consumerList.indexOf(name) < 0 ? 0 : 1,
+      name:name
+    }));
+
+    db.createRecord(dataList);
 
     res.render('create-success');
   });

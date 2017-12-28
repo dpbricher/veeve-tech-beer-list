@@ -1,0 +1,27 @@
+cellPad = 10px
+border  = 1px solid black
+
+.name-table
+  display table
+  border border
+
+  input[type=checkbox]
+  input[type=radio]
+    display none
+
+    & + div
+      padding cellPad
+
+    &:checked + div
+      background-color lightgrey
+
+  .name-list
+    display table-row
+
+    > div
+    label
+      display table-cell
+
+    > div
+      border-right border
+      padding cellPad

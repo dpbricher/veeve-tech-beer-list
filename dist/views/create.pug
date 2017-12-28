@@ -1,21 +1,22 @@
-- var dataList  = [{name:'Dean',bought:'deanBought',consumed:'deanConsumed'}, {name:'Symon',bought:'symonBought',consumed:'symonConsumed'}, {name:'Giannis',bought:'giannisBought',consumed:'giannisConsumed'}, {name:'Oli',bought:'oliBought',consumed:'oliConsumed'}, {name:'Stuart',bought:'stuartBought',consumed:'stuartConsumed'}]
-
-title Create Entry
+head
+    title Create Entry
+    link(href='/style/create.css', rel='stylesheet')
 body
   form(action='/create-new')
-    for data in dataList
-      div
-        span= data.name
-        for action in ['bought', 'consumed']
-          div
-            span= action
-            label
-              span 0
-              input(name=data[action], type='radio', value=0, checked)
-            for _, i in dataList
-              label
-                input(name=data[action], type='radio', value=i + 1)
-                span= i + 1
+    div.name-table
+      div.name-list
+        div Buyer
+        for name in nameList
+          label
+            input(type='radio', name='buyer', value=name)
+            div= name
+
+      div.name-list
+        div Drinkers
+        for name in nameList
+          label
+            input(type='checkbox', name='consumerList[]', value=name)
+            div= name
 
     input(type='submit' value='Submit')
     a(href='/') Cancel
