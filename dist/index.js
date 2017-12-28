@@ -3,17 +3,15 @@
 
   const auth    = require('basic-auth');
   const express = require('express');
+  const http    = require('http');
   const pug     = require('pug');
   const stylus  = require('stylus');
 
   const config  = require('./.config');
 
-  const Database  = require('./classes/database');
-
   const PORT    = 1337;
 
   let app       = express();
-  let db        = new Database();
   let styleDir  = __dirname + '/style';
 
   app.set('view engine', 'pug');
@@ -38,59 +36,68 @@
   });
 
   app.get('/', (req, res)=> {
-    let recordList  = db.getRecordListReverse();
-    let totalMap    = {};
-    let personList  = [];
+    getRecordList(true)
+    .then(recordList => {
+      let totalMap    = {};
+      let personList  = [];
 
-    recordList.forEach((i)=> {
-      for (let v of i) {
-        let personMap       =
-        totalMap[v.name]    = totalMap[v.name] || {};
+      recordList.forEach((i)=> {
+        for (let v of i) {
+          let personMap       =
+          totalMap[v.name]    = totalMap[v.name] || {};
 
-        personMap.bought    = (personMap.bought || 0) + (v.bought || 0);
-        personMap.consumed  = (personMap.consumed || 0) + (v.consumed || 0);
+          personMap.bought    = (personMap.bought || 0) + (v.bought || 0);
+          personMap.consumed  = (personMap.consumed || 0) + (v.consumed || 0);
+        }
+      });
+
+      // convert from map to array
+      for (let name in totalMap) {
+        let personMap = totalMap[name];
+
+        personMap.name  = name;
+        personList.push(personMap);
       }
+
+      // calculate ratios
+      personList.forEach((personMap)=> {
+        personMap.ratio = personMap.consumed > 0 ?
+          personMap.bought / personMap.consumed : 0;
+      });
+
+      // determine who should be next to buy
+      let lowestRatio = personList.reduce((lowest, personMap)=>
+        Math.min(personMap.ratio, lowest)
+      , Infinity);
+
+      let nextList    = personList.filter((personMap)=>
+        personMap.ratio == lowestRatio
+      );
+
+      res.render('main', { nextBuyersList:nextList, personList:personList,
+        recordList:recordList });
+    }, err => {
+      console.error(err);
+      res.send(500, err);
     });
-
-    // convert from map to array
-    for (let name in totalMap) {
-      let personMap = totalMap[name];
-
-      personMap.name  = name;
-      personList.push(personMap);
-    }
-
-    // calculate ratios
-    personList.forEach((personMap)=> {
-      personMap.ratio = personMap.consumed > 0 ?
-        personMap.bought / personMap.consumed : 0;
-    });
-
-    // determine who should be next to buy
-    let lowestRatio = personList.reduce((lowest, personMap)=>
-      Math.min(personMap.ratio, lowest)
-    , Infinity);
-
-    let nextList    = personList.filter((personMap)=>
-      personMap.ratio == lowestRatio
-    );
-
-    res.render('main', { nextBuyersList:nextList, personList:personList,
-      recordList:recordList });
   });
 
   app.get('/create', (req, res)=> {
     let nameMap   = {};
 
-    db.getRecordList().forEach((record)=>
-      record.forEach((entry)=> nameMap[entry.name] = 0)
-    );
+    getRecordList()
+    .then(recordList => {
+      recordList.forEach((record)=>
+        record.forEach((entry)=> nameMap[entry.name] = 0)
+      );
 
-    res.render('create', { nameList:Object.keys(nameMap) });
+      res.render('create', { nameList:Object.keys(nameMap) });
+    }, err => res.status(500).send(err));
   });
 
   app.get('/create-new', (req, res)=> {
     let query = req.query;
+    let fail  = ()=> res.status(400).render('failure');
 
     if (query.buyer && query.consumerList) {
       let nameList  = query.consumerList.slice();
@@ -104,13 +111,43 @@
         name:name
       }));
 
-      db.createRecord(dataList);
-
-      res.render('success');
+      createRecord(dataList)
+      .then(()=> res.render('success'), fail);
     } else {
-      res.status(400).render('failure');
+      fail();
     }
   });
 
   app.listen(PORT, ()=> console.log(`listening on port ${PORT}`));
+
+  function getRecordList(reverse) {
+    return apiRequest('/record-list' + (reverse ? '?reverse=1' : ''));
+  }
+
+  function createRecord(dataList) {
+    return apiRequest('/create', 'POST', dataList);
+  }
+
+  function apiRequest(path, method, data) {
+    return new Promise((s, f)=> {
+      let req   = http.request({
+        hostname:config.api.host,
+        method:method || 'GET',
+        port:config.api.port,
+        path:path
+      }, res => {
+        let content = '';
+
+        res.on('data', d => content += d)
+        .on('end', ()=> s(content.length ? JSON.parse(content) : null));
+      })
+      .on('error', err => f(err));
+
+      if (data) {
+        req.setHeader('Content-Type', 'application/json');
+        req.write(JSON.stringify(data), 'utf8', ()=> req.end());
+      } else
+        req.end();
+    });
+  }
 })();
