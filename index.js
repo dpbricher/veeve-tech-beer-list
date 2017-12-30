@@ -36,10 +36,14 @@
   });
 
   app.get('/', (req, res)=> {
-    getRecordList(true)
-    .then(recordList => {
+    Promise.all([
+      getRecordList(true),
+      getUserList()
+    ])
+    .then(resList => {
+      let [recordList, userList]  = resList;
+
       let totalMap    = {};
-      let personList  = [];
 
       recordList.forEach((i)=> {
         for (let v of i) {
@@ -51,13 +55,11 @@
         }
       });
 
-      // convert from map to array
-      for (let name in totalMap) {
-        let personMap = totalMap[name];
+      let personList  = userList.map(i => {
+        let person  = totalMap[i.name] || {};
 
-        personMap.name  = name;
-        personList.push(personMap);
-      }
+        return { bought:person.bought || 0, consumed:person.consumed || 0, name:i.name };
+      });
 
       // calculate ratios
       personList.forEach((personMap)=> {
@@ -83,15 +85,9 @@
   });
 
   app.get('/create', (req, res)=> {
-    let nameMap   = {};
-
-    getRecordList()
-    .then(recordList => {
-      recordList.forEach((record)=>
-        record.forEach((entry)=> nameMap[entry.name] = 0)
-      );
-
-      res.render('create', { nameList:Object.keys(nameMap) });
+    getUserList()
+    .then(userList => {
+      res.render('create', { nameList:userList.map(i => i.name) });
     }, err => res.status(500).send(err));
   });
 
@@ -122,6 +118,10 @@
 
   function getRecordList(reverse) {
     return apiRequest('/record-list' + (reverse ? '?reverse=1' : ''));
+  }
+
+  function getUserList() {
+    return apiRequest('/user-list');
   }
 
   function createRecord(dataList) {
