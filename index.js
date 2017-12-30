@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+// version v8.9.3
 (()=> {
   'use strict';
 
@@ -78,9 +80,10 @@
 
       res.render('main', { nextBuyersList:nextList, personList:personList,
         recordList:recordList });
-    }, err => {
+    })
+    .catch(err => {
       console.error(err);
-      res.send(500, err);
+      res.status(500).send(err);
     });
   });
 
