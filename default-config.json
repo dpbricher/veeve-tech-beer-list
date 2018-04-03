@@ -1,0 +1,10 @@
+{
+  "login":{
+    "name":"list",
+    "pass":"b33r"
+  },
+  "api":{
+    "host":"beer-list-api",
+    "port":7331
+  }
+}
